@@ -3,9 +3,9 @@ import prismadb from "@/lib/prismadb";
 interface DashboardPageProps {
     params: {storeId: string}
 }
-const DashboardPage: React.FC<DashboardPageProps> = async({
+export default async function DashboardPage({
     params
-}) => {
+}:DashboardPageProps){
     const store = await prismadb.store.findFirst({
         where: {
             id: params.storeId
@@ -18,4 +18,13 @@ const DashboardPage: React.FC<DashboardPageProps> = async({
     )
 }
 
-export default DashboardPage;
+
+// ✅ This is critical — avoids params sync error
+export async function generateStaticParams() {
+    const stores = await prismadb.store.findMany();
+    return stores.map((store) => ({
+        storeId: store.id
+    }));
+}
+
+
