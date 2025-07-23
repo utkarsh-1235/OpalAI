@@ -3,11 +3,9 @@ import { auth } from "@clerk/nextjs/server";
 import {redirect} from "next/navigation";
 
 export default async function SetUpLayout({
-    children,
-    params
+    children
 }: {
     children: React.ReactNode;
-    params: {storeId: string}
 }) {
     const {userId} = await auth();
 
@@ -17,7 +15,6 @@ export default async function SetUpLayout({
 
     const store = await prismadb.store.findFirst({
          where: {
-            id: params.storeId,
             userId
          }
     });
