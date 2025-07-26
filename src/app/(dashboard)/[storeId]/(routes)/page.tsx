@@ -1,16 +1,10 @@
-import prismadb from "@/lib/prismadb";
+// import prismadb from "@/lib/prismadb";
+"use client";
+import { useStore } from "@/context/store-context"
 
-interface DashboardPageProps {
-    params: {storeId: string}
-}
-export default async function DashboardPage({
-    params
-}:DashboardPageProps){
-    const store = await prismadb.store.findFirst({
-        where: {
-            id: params.storeId
-        }
-})
+export default function DashboardPage(){
+
+const store = useStore();
     return(
         <div>
             Active Store: {store?.name}
@@ -18,13 +12,5 @@ export default async function DashboardPage({
     )
 }
 
-
-// ✅ This is critical — avoids params sync error
-export async function generateStaticParams() {
-    const stores = await prismadb.store.findMany();
-    return stores.map((store) => ({
-        storeId: store.id
-    }));
-}
 
 
