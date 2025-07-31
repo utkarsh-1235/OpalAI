@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {ClerkProvider} from "@clerk/nextjs";
-import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { Manrope } from "next/font/google";
+import {ThemeProvider} from "@/components/theme-provider";
 
 const manrope = Manrope({ subsets: ['latin']})
 
@@ -19,13 +19,14 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${manrope.className} bg-[#171717]`}
       > 
+      <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
       <ToastProvider/>
-        <ModalProvider/>
         {children}
+        </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>
