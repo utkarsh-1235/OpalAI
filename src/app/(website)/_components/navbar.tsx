@@ -1,11 +1,11 @@
 import Link from "next/link";
 import React from "react";
 
-type NavbarProps = {}
+type NavbarProps = object;
 
 const LandingPageNavbar = (props: NavbarProps) => {
     return (
-        <div >
+        <div {...props}>
         <nav className="mx-auto px-6 py-2 flex justify-between items-center">
          <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
     
@@ -25,7 +25,7 @@ const LandingPageNavbar = (props: NavbarProps) => {
             ))}
           </div>
           
-          <Link href="/auth/signin">
+          <Link href="/auth/sign-in">
           <button className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-0.5 transition-all duration-300">
             Start Free Trial
           </button>

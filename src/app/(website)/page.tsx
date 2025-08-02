@@ -1,7 +1,5 @@
 // 'use client';
 
-import LandingPageNavbar from "./_components/navbar"
-
 // import { useEffect, useState } from 'react';
 
 // interface CounterProps {
