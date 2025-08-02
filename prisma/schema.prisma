@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,10 +8,128 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
- model Store {
-  id    String     @id @default(uuid())
-  name  String
-  userId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clerkId        String         @unique
+  email          String         @unique
+  firstname      String?
+  lastname       String?
+  image          String?
+  trial          Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  studio         Media?
+  videos         Videos[]
+  workspaces     Workspace[]
+  subscriptions  Subscription?
+  members        Member[]
+  notifications  Notification[]
+  sentInvites    Invite[]       @relation("SentInvites")
+  receivedInvites Invite[]      @relation("ReceivedInvites")
+}
+
+enum PRESET {
+  HD
+  SD
+}
+
+model Media {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  screen   String?   
+  mic      String?
+  camera   String?
+  preset   PRESET   @default(SD)
+  userId   String   @unique @db.Uuid
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+enum Type {
+  PERSONAL
+  PUBLIC
+}
+
+model Workspace {
+  id       String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String
+  type     Type
+  userId   String?    @db.Uuid
+
+  user     User?      @relation(fields: [userId], references: [id])
+  members  Member[]
+  invites  Invite[]
+  folders  Folder[]
+  videos   Videos[]
+}
+
+enum SUBSCRIPTION_PLAN {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+model Subscription {
+  id         String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String?           @unique @db.Uuid
+  plan       SUBSCRIPTION_PLAN @default(FREE)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  customerId String?           @unique
+  user       User?             @relation(fields: [userId], references: [id])
+}
+
+model Member {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String?    @db.Uuid
+  workspaceId String?    @db.Uuid
+  user        User?      @relation(fields: [userId], references: [id])
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+}
+
+model Invite {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  senderId     String?    @db.Uuid
+  receiverId   String?    @db.Uuid
+  workspaceId  String?    @db.Uuid
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  sender       User?      @relation("SentInvites", fields: [senderId], references: [id])
+  receiver     User?      @relation("ReceivedInvites", fields: [receiverId], references: [id])
+  workspace    Workspace? @relation(fields: [workspaceId], references: [id])
+}
+
+model Notification {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String?    @db.Uuid
+  user        User?      @relation(fields: [userId], references: [id])  
+  content     String
+}
+
+model Folder{
+id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+name        String
+createdAt   DateTime   @default(now())
+WorkSpace   Workspace? @relation(fields: [workspaceId], references: [id])
+workspaceId String?    @db.Uuid
+videos    Videos[]
+}
+
+model Videos {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String?
+  source     String  @unique
+  Folder     Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId    String?   @db.Uuid
+  thumbnail   String?
+  userId      String?    @db.Uuid
+  processing Boolean    @default(true)
+  WorkSpace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String?    @db.Uuid
+  user        User?      @relation(fields: [userId], references: [id])
+  views       Int        @default(0)
+  summary     String?
+  createdAt   DateTime   @default(now())
 }
