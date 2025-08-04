@@ -1,7 +1,9 @@
 import { onAuthenticateUser } from "@/actions/user";
 import { getAllUserVideos, getUserNotifications, getWorkSpaces, getWorkspaceFolders, verifyAccessToWOrkspace } from "@/actions/workspace";
 import { redirect } from "next/navigation";
-import { QueryClient } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import Sidebar from "@/components/global/sidebar";
+
 
 type Props = {
     params: { workspaceId: string };
@@ -40,7 +42,16 @@ const ComponentStuff = async (props: Props & { children: React.ReactNode }) => {
         queryKey: ['user-notifications'],
         queryFn: () => getUserNotifications()
     })
-    return <div className="text-3xl text-center"> {workspaceId} {children}</div>
+    return (
+         <HydrationBoundary state={dehydrate(query)}>
+    <div className="flex h-screen">
+      <Sidebar activeWorkspaceId={workspaceId} />
+      <div className="flex-1 overflow-y-auto">
+        {children}
+      </div>
+    </div>
+  </HydrationBoundary>
+    )
 }
 
 export default ComponentStuff;
