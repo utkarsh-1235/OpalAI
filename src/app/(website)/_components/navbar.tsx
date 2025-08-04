@@ -7,8 +7,7 @@ const LandingPageNavbar = (props: NavbarProps) => {
     return (
         <div {...props}>
         <nav className="mx-auto px-6 py-2 flex justify-between items-center">
-         <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-    
+         <div className=" flex text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
            VisionAI
         </div>
 
