@@ -6,12 +6,13 @@ import Sidebar from "@/components/global/sidebar";
 
 
 type Props = {
+    children: React.ReactNode ;
     params: { workspaceId: string };
 }
-const ComponentStuff = async (props: Props & { children: React.ReactNode }) => {
-    const params = await props.params;
-    const workspaceId = params.workspaceId;
-    const { children } = props;
+const ComponentStuff = async ({children, params}: Props) => {
+    
+    const workspaceId = await Promise.resolve(params.workspaceId);
+    
 
     const auth = await onAuthenticateUser();
     if(!auth.user?.workspaces) redirect("/auth/sign-in");
@@ -42,6 +43,8 @@ const ComponentStuff = async (props: Props & { children: React.ReactNode }) => {
         queryKey: ['user-notifications'],
         queryFn: () => getUserNotifications()
     })
+
+    console.log("WorkspaceId: ", workspaceId);
     return (
          <HydrationBoundary state={dehydrate(query)}>
     <div className="flex h-screen">
