@@ -175,3 +175,42 @@ export const getUserNotifications = async() => {
         return {status: 403, data: [], error: error}
     }
 }
+
+export const searchWorkspace = async(query: string) => {
+  try{
+   const user = await currentUser();
+   if(!user) return {status: 401}
+
+   const workspace = await client.user.findMany({
+    where: {
+        OR: [
+            {firstname: {contains: query}},
+            {email: {contains: query}},
+            {lastname: {contains: query}},
+
+        ],
+        NOT: [{clerkId: user.id}]
+    },
+    select: {
+        id: true,
+
+        subscriptions: {
+            select: {
+                plan: true
+            }
+        },
+        firstname: true,
+        lastname: true,
+        image: true,
+        email: true
+    }
+   })
+
+   if(workspace && workspace.length > 0){
+    return {status: 200, data: workspace}
+   }
+   return {status: 404, data: undefined}
+  }catch(error){
+   return {status: 500, data: error}
+  }
+}
