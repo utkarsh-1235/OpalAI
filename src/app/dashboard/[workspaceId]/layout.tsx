@@ -1,7 +1,6 @@
-import { onAuthenticateUser } from "@/actions/user";
+import { getUserNotifications, onAuthenticateUser } from "@/actions/user";
 import { 
-  getAllUserVideos, 
-  getUserNotifications, 
+  getAllUserVideos,  
   getWorkSpaces, 
   getWorkspaceFolders, 
   verifyAccessToWOrkspace 
@@ -19,7 +18,6 @@ const ComponentStuff = async ({ children, params }: Props) => {
   // ✅ Await params here
   const { workspaceId } = await params;
 
-  console.log("WorkspaceId: ", workspaceId);
 
   const auth = await onAuthenticateUser();
   if (!auth.user?.workspaces || !auth.user.workspaces.length) {
