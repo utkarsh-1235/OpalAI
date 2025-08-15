@@ -8,25 +8,27 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { WorkspaceProps } from "@/types";
 import { useRouter } from "next/navigation";
 import Modal from "../modal";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle} from "lucide-react";
+import Search from "../search";
 
 type Props = {
     activeWorkspaceId: string
 }
 const Sidebar = ({activeWorkspaceId}: Props) => {
     const router = useRouter();
-  console.log("activeWOrkspaceId",activeWorkspaceId);
     const {data, isFetched} = useQueryData(['user-workspaces'], getWorkSpaces);
 
-    const { workspace = [], members = [] } = (data as WorkspaceProps)?.data || {};
+    const {subscription = null, workspace = [], members = [] } = (data as WorkspaceProps)?.data || {};
 
     const onChangeActiveWorkSpace = (value: string) => {
         router.push(`/dashboard/${value}`)
     }
+
+    const currentWorkspace = workspace.find((s) => s.id === activeWorkspaceId)
 return (
 <div className="bg-[#111111] flex-none relative p-4 h-full w-[250px] flex flex-col gap-4 items-center overflow-hidden">
     <div className="bg-[#111111] p-4 gap-2 justify-center items-center mb-4 absolute top-0 left-0 right-0">
-        <div className=" flex text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+        <div className=" flex text-2xl justify-center font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
            VisionAI
         </div>
     </div>
@@ -34,8 +36,8 @@ return (
     defaultValue={activeWorkspaceId}
     onValueChange={onChangeActiveWorkSpace}
     >
-        <SelectTrigger className="mt-16 text-neutral-400 bg-transparent">
-            <SelectValue placeholder="Select a workspace"></SelectValue>
+        <SelectTrigger className="mt-16 w-full text-neutral-400 bg-[#1a1a1a] border border-neutral-700 rounded-md">
+            <SelectValue placeholder="Select a workspace">Select a workspace</SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-[#111111] backdrop-blur-xl">
             <SelectGroup>
@@ -58,7 +60,7 @@ return (
             </SelectGroup>
         </SelectContent>
     </Select>
-    <Modal trigger={<span className="text-sm cursor-pointer flex items-center justify-center border-t-neutral-800/90 hover:bg-neutral-800/60 w-full rounded-sm p-[5px] gap-2">
+    {currentWorkspace?.type ==='PUBLIC' && subscription?.plan === 'PRO' && <Modal trigger={<span className="text-sm cursor-pointer flex items-center justify-center border-t-neutral-800/90 hover:bg-neutral-800/60 w-full rounded-sm p-[5px] gap-2">
     <PlusCircle
     size={15}
     className="text-neutral-800/90 fill-neutral-500 "/>
@@ -68,9 +70,9 @@ return (
     </span>}
     title="Invite to workspace"
     description="Invite other users to your workspace">
-        WorkspaceSearch
-    </Modal>
-
+        <Search workspaceId={activeWorkspaceId}/>
+    </Modal>}
+    <p className="w-full text-[#9D9D9D] font-bold mt-4"> Menu</p>
 </div>
 )
 }

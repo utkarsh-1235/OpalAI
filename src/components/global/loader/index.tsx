@@ -15,7 +15,7 @@ const index = ({state, className, color, children}: Props) => {
           {color}
         </div>
     ) : (
-        children
+        <>{children}</>
     )
 }
 
