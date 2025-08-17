@@ -193,7 +193,7 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
             description="Unlock AI features like transcription, AI summary, and more."
             footer={
               <Button className="text-sm w-full">
-                <Loader state={false}>Upgrade</Loader>
+                <Loader color="#000" state={false}>Upgrade</Loader>
               </Button>
             }
           />
