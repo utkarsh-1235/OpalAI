@@ -1,3 +1,4 @@
+import CreateWorkspace from "@/components/global/create-workspace";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Props = {
@@ -19,7 +20,7 @@ const Page = ({params}: Props) => {
                 </TabsTrigger>
             </TabsList>
             <div className="flex gap-x-3">
-
+                <CreateWorkspace/>
             </div>
          </div>
        </Tabs>
