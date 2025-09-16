@@ -148,69 +148,45 @@ export const getWorkSpaces = async() => {
     }
 }
 
-export const getUserNotifications = async() => {
+export const createWorkspace = async(name: string) => {
     try{
-     const user = await currentUser();
-        if(!user) return {status: 404}
-
-        const notifications = await client.user.findMany({
-            where: {
-                clerkId: user.id
-            },
-            select: {
-                notifications: true,
-                _count: {
-                    select: {
-                        notifications: true
-                    }
+        const user = await currentUser();
+       if(!user) return { status: 404}
+       const authorized = await client.user.findUnique({
+        where: {
+            clerkId: user.id
+        },
+        select: {
+            subscriptions: {
+                select: {
+                    plan: true
                 }
             }
-        })
-
-        if(notifications && notifications.length > 0){
-            return {status: 200, data: notifications[0].notifications}
         }
-        return {status: 404, data: []}
-    }catch(error){
-        return {status: 403, data: [], error: error}
+       })
+
+       if(authorized?.subscriptions?.plan === "PRO"){
+            const workspace = await client.user.update({
+                where: {
+                    clerkId: user.id
+                },
+                data: {
+                    workspaces: {
+                        create: {
+                            name,
+                            type: 'PUBLIC'
+                        }
+                    }
+                }
+            })
+            if(workspace){
+        return {status: 201, data: 'Workspace Created'}
+       }
+       }
+       return {status: 401, data: 'You are not authorized to create workspace'}
+       
     }
-}
-
-export const searchWorkspace = async(query: string) => {
-  try{
-   const user = await currentUser();
-   if(!user) return {status: 401}
-
-   const workspace = await client.user.findMany({
-    where: {
-        OR: [
-            {firstname: {contains: query}},
-            {email: {contains: query}},
-            {lastname: {contains: query}},
-
-        ],
-        NOT: [{clerkId: user.id}]
-    },
-    select: {
-        id: true,
-
-        subscriptions: {
-            select: {
-                plan: true
-            }
-        },
-        firstname: true,
-        lastname: true,
-        image: true,
-        email: true
-    }
-   })
-
-   if(workspace && workspace.length > 0){
-    return {status: 200, data: workspace}
-   }
-   return {status: 404, data: undefined}
-  }catch(error){
-   return {status: 500, data: error}
-  }
+ catch(error){
+    return {status: 400, data: error}
+ }  
 }
