@@ -7,7 +7,7 @@ type Props = {
     color?: string
     children?: React.ReactNode
 }
-const index = ({state, className, color, children}: Props) => {
+const Loader = ({state, className, color, children}: Props) => {
     return state ? (
   
         <div className={cn(className)}>
@@ -19,4 +19,4 @@ const index = ({state, className, color, children}: Props) => {
     )
 }
 
-export default index;
+export default Loader;
